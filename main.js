@@ -3,13 +3,13 @@ const express = require("express");
 const app = express();
 
 app.use(express.static("public"));
-// require("dotenv").config();
 
 const serverPort = process.env.PORT || 3000;
 const server = http.createServer(app);
 const WebSocket = require("ws");
 
 let keepAliveId;
+let randomNumberId; // ID pour l'envoi des chiffres aléatoires
 
 const wss =
   process.env.NODE_ENV === "production"
@@ -26,6 +26,7 @@ wss.on("connection", function (ws, req) {
   if (wss.clients.size === 1) {
     console.log("first connection. starting keepalive");
     keepServerAlive();
+    startSendingRandomNumbers(); // Commencer l'envoi des chiffres aléatoires
   }
 
   ws.on("message", (data) => {
@@ -41,13 +42,26 @@ wss.on("connection", function (ws, req) {
     console.log("closing connection");
 
     if (wss.clients.size === 0) {
-      console.log("last client disconnected, stopping keepAlive interval");
+      console.log("last client disconnected, stopping keepAlive and random number intervals");
       clearInterval(keepAliveId);
+      clearInterval(randomNumberId); // Stopper l'envoi des chiffres aléatoires
     }
   });
 });
 
-// Implement broadcast function because of ws doesn't have it
+// Fonction pour envoyer un chiffre aléatoire toutes les 3 secondes
+const startSendingRandomNumbers = () => {
+  randomNumberId = setInterval(() => {
+    const randomNum = Math.floor(Math.random() * (280 - 150 + 1)) + 150;
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(`Random Number: ${randomNum}`);
+      }
+    });
+  }, 3000); // Toutes les 3 secondes
+};
+
+// Implémenter la fonction broadcast car ws ne l'a pas
 const broadcast = (ws, message, includeSelf) => {
   if (includeSelf) {
     wss.clients.forEach((client) => {
@@ -65,9 +79,9 @@ const broadcast = (ws, message, includeSelf) => {
 };
 
 /**
- * Sends a ping message to all connected clients every 50 seconds
+ * Envoyer un message "ping" à tous les clients connectés toutes les 50 secondes
  */
- const keepServerAlive = () => {
+const keepServerAlive = () => {
   keepAliveId = setInterval(() => {
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
@@ -76,7 +90,6 @@ const broadcast = (ws, message, includeSelf) => {
     });
   }, 50000);
 };
-
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
