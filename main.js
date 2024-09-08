@@ -52,7 +52,10 @@ wss.on("connection", function (ws, req) {
 // Fonction pour envoyer un chiffre aléatoire toutes les 3 secondes en format JSON
 const startSendingRandomNumbers = () => {
   randomNumberId = setInterval(() => {
-    const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
+    //const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
+
+    const randomNum = Math.floor(Math.random() * (500 - (-500) + 1)) + (-500);
+    
     const message = {
       type: "randomNumber",
       value: randomNum,
