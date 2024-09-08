@@ -54,7 +54,7 @@ const startSendingRandomNumbers = () => {
   randomNumberId = setInterval(() => {
     //const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
 
-    const randomNum = Math.floor(Math.random() * (500 - (-500) + 1)) + (-500);
+    const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
     
     const message = {
       type: "randomNumber",
