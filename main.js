@@ -63,7 +63,7 @@ const startSendingRandomNumbers = () => {
         client.send(JSON.stringify(message)); // Envoi en format JSON
       }
     });
-  }, 300); // Toutes les 3 secondes
+  }, 1000); // Toutes les 1 secondes
 };
 
 // Implémenter la fonction broadcast car ws ne l'a pas
