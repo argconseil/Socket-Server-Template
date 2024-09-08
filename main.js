@@ -49,13 +49,18 @@ wss.on("connection", function (ws, req) {
   });
 });
 
-// Fonction pour envoyer un chiffre aléatoire toutes les 3 secondes
+// Fonction pour envoyer un chiffre aléatoire toutes les 3 secondes en format JSON
 const startSendingRandomNumbers = () => {
   randomNumberId = setInterval(() => {
     const randomNum = Math.floor(Math.random() * (280 - 150 + 1)) + 150;
+    const message = {
+      type: "randomNumber",
+      value: randomNum,
+      timestamp: new Date().toISOString()
+    };
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(`Random Number: ${randomNum}`);
+        client.send(JSON.stringify(message)); // Envoi en format JSON
       }
     });
   }, 3000); // Toutes les 3 secondes
