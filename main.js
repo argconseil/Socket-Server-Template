@@ -52,7 +52,7 @@ wss.on("connection", function (ws, req) {
 // Fonction pour envoyer un chiffre aléatoire toutes les 3 secondes en format JSON
 const startSendingRandomNumbers = () => {
   randomNumberId = setInterval(() => {
-    const randomNum = Math.floor(Math.random() * (280 - 150 + 1)) + 150;
+    const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
     const message = {
       type: "randomNumber",
       value: randomNum,
@@ -63,7 +63,7 @@ const startSendingRandomNumbers = () => {
         client.send(JSON.stringify(message)); // Envoi en format JSON
       }
     });
-  }, 3000); // Toutes les 3 secondes
+  }, 1000); // Toutes les 3 secondes
 };
 
 // Implémenter la fonction broadcast car ws ne l'a pas
