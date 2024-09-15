@@ -41,11 +41,8 @@ wss.on("connection", function (ws, req) {
   ws.on("close", (data) => {
     console.log("closing connection");
 
-    if (wss.clients.size === 0) {
-      console.log("last client disconnected, stopping keepAlive and random number intervals");
       clearInterval(keepAliveId);
       clearInterval(randomNumberId); // Stopper l'envoi des chiffres aléatoires
-    }
   });
 });
 
