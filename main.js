@@ -1,8 +1,3 @@
-const http = require("http");
-const express = require("express");
-const app = express();
-
-
 const WebSocket = require('ws');
 
 // Création du serveur WebSocket
@@ -27,9 +22,5 @@ wss.on('connection', function connection(ws) {
   });
 });
 
-
-
-app.get('/', (req, res) => {
-    res.send('Hello World!');
   console.log('Serveur WebSocket en écoute sur le port 8080');
-});
+
