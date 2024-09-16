@@ -1,104 +1,25 @@
-const http = require("http");
-const express = require("express");
-const app = express();
+const WebSocket = require('ws');
 
-app.use(express.static("public"));
+// Création du serveur WebSocket
+const wss = new WebSocket.Server({ port: 8080 });
 
-const serverPort = process.env.PORT || 3000;
-const server = http.createServer(app);
-const WebSocket = require("ws");
+wss.on('connection', function connection(ws) {
+  console.log('Client connecté');
 
-let keepAliveId;
-let randomNumberId; // ID pour l'envoi des chiffres aléatoires
+  // Lorsque le serveur reçoit un message du client
+  ws.on('message', function incoming(message) {
+    console.log('Message reçu:', message);
 
-const wss =
-  process.env.NODE_ENV === "production"
-    ? new WebSocket.Server({ server })
-    : new WebSocket.Server({ port: 5001 });
-
-server.listen(serverPort);
-console.log(`Server started on port ${serverPort} in stage ${process.env.NODE_ENV}`);
-
-wss.on("connection", function (ws, req) {
-  console.log("Connection Opened");
-  console.log("Client size: ", wss.clients.size);
-
-  if (wss.clients.size === 1) {
-    console.log("first connection. starting keepalive");
-    keepServerAlive();
-    startSendingRandomNumbers(); // Commencer l'envoi des chiffres aléatoires
-  }
-
-  ws.on("message", (data) => {
-    let stringifiedData = data.toString();
-    if (stringifiedData === 'pong') {
-      console.log('keepAlive');
-      return;
+    // Exemple de commande pour déconnecter un client
+    if (message === 'disconnect') {
+      ws.close(1000, 'Déconnexion demandée'); // Code 1000 : déconnexion normale
     }
-    broadcast(ws, stringifiedData, false);
   });
 
-  ws.on("close", (data) => {
-    console.log("closing connection");
-      clearInterval(keepAliveId);
-      clearInterval(randomNumberId); // Stopper l'envoi des chiffres aléatoires
+  // Lorsque la connexion est fermée
+  ws.on('close', function close(code, reason) {
+    console.log(`Connexion fermée. Code: ${code}, Raison: ${reason}`);
   });
 });
 
-// Fonction pour envoyer un chiffre aléatoire toutes les 3 secondes en format JSON
-const startSendingRandomNumbers = () => {
-  randomNumberId = setInterval(() => {
-    //const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
-
-    const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
-    
-    const message = {
-      type: "randomNumber",
-      value: randomNum,
-      timestamp: new Date().toISOString()
-    };
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(message)); // Envoi en format JSON
-        //console.log("height envoyé");
-      }
-    });
-  }, 1000); // Toutes les 1 secondes
-};
-
-// Implémenter la fonction broadcast car ws ne l'a pas
-const broadcast = (ws, message, includeSelf) => {
-  if (includeSelf) {
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
-  } else {
-    wss.clients.forEach((client) => {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
-  }
-};
-
-/**
- * Envoyer un message "ping" à tous les clients connectés toutes les 50 secondes
- */
-const keepServerAlive = () => {
-  keepAliveId = setInterval(() => {
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send('ping');
-        //console.log("ping envoyé");
-      }
-    });
-  }, 50000);
-};
-
-
-
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+console.log('Serveur WebSocket en écoute sur le port 8080');
