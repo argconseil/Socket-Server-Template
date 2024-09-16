@@ -22,7 +22,7 @@ wss.on('connection', function connection(ws) {
   const jsonMessage = JSON.stringify({ number: randomNumber }); // Créer un objet JSON avec le nombre
   ws.send(jsonMessage); // Envoyer le message JSON au client
   console.log(`Nombre aléatoire envoyé: ${randomNumber} en JSON: ${jsonMessage}`);
-}, 3000); // 3 secondes
+}, 1000); // 3 secondes
 
 
   
