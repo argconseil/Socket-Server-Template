@@ -17,10 +17,13 @@ wss.on('connection', function connection(ws) {
   console.log('Client connecté');
 
   ws.on('message', function incoming(message) {
-    console.log('Message reçu:', message);
+    // Conversion du buffer en string
+    const messageStr = message.toString();
+    console.log('Message reçu:', messageStr);
 
-    if (message === 'disconnect') {
-      ws.close(1000, 'Déconnexion demandée');
+    // Exemple de commande pour déconnecter un client
+    if (messageStr === 'disconnect') {
+      ws.close(1000, 'Déconnexion demandée'); // Code 1000 : déconnexion normale
     }
   });
 
