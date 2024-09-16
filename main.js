@@ -8,7 +8,7 @@ const server = http.createServer((req, res) => {
 });
 
 // Utilisation du port attribué par Heroku
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5001;
 
 // Création du serveur WebSocket
 const wss = new WebSocket.Server({ server });
