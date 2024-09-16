@@ -1,3 +1,8 @@
+const http = require("http");
+const express = require("express");
+const app = express();
+
+
 const WebSocket = require('ws');
 
 // Création du serveur WebSocket
