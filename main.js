@@ -15,6 +15,7 @@ const wss = new WebSocket.Server({ server });
 
 wss.on('connection', function connection(ws) {
   console.log('Client connecté');
+  startSendingRandomNumbers();
 
   ws.on('message', function incoming(message) {
     // Conversion du buffer en string
@@ -31,6 +32,28 @@ wss.on('connection', function connection(ws) {
     console.log(`Connexion fermée. Code: ${code}, Raison: ${reason}`);
   });
 });
+
+const startSendingRandomNumbers = () => {
+  randomNumberId = setInterval(() => {
+    //const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
+
+    const randomNum = Math.floor(Math.random() * (500 - 10 + 1)) + 10;
+    
+    const message = {
+      type: "randomNumber",
+      value: randomNum,
+      timestamp: new Date().toISOString()
+    };
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(message)); // Envoi en format JSON
+        //console.log("height envoyé");
+      }
+    });
+  }, 1000); // Toutes les 1 secondes
+};
+
+
 
 // Démarrage du serveur HTTP sur le port attribué
 server.listen(port, () => {
