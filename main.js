@@ -40,7 +40,6 @@ wss.on("connection", function (ws, req) {
 
   ws.on("close", (data) => {
     console.log("closing connection");
-   disconnetClients();
       clearInterval(keepAliveId);
       clearInterval(randomNumberId); // Stopper l'envoi des chiffres aléatoires
   });
@@ -98,16 +97,7 @@ const keepServerAlive = () => {
   }, 50000);
 };
 
-const disconnetClients = () => {
-  disconnet = setInterval(() => {
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        ws.close
-        //console.log("fermeture opéré pour");
-      }
-    });
-  }, 50000);
-};
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
