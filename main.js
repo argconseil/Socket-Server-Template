@@ -27,4 +27,9 @@ wss.on('connection', function connection(ws) {
   });
 });
 
-console.log('Serveur WebSocket en écoute sur le port 8080');
+
+
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+  console.log('Serveur WebSocket en écoute sur le port 8080');
+});
