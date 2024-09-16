@@ -33,11 +33,13 @@ wss.on('connection', function connection(ws) {
 
     // Exemple de commande pour déconnecter un client
     if (messageStr === 'disconnect') {
+      clearInterval(intervalId);
       ws.close(1000, 'Déconnexion demandée'); // Code 1000 : déconnexion normale
     }
   });
 
   ws.on('close', function close(code, reason) {
+        clearInterval(intervalId);
     console.log(`Connexion fermée. Code: ${code}, Raison: ${reason}`);
   });
 });
