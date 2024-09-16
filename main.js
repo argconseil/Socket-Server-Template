@@ -40,7 +40,7 @@ wss.on("connection", function (ws, req) {
 
   ws.on("close", (data) => {
     console.log("closing connection");
-    ws.close
+   disconnetClients();
       clearInterval(keepAliveId);
       clearInterval(randomNumberId); // Stopper l'envoi des chiffres aléatoires
   });
@@ -61,7 +61,7 @@ const startSendingRandomNumbers = () => {
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(message)); // Envoi en format JSON
-        console.log("height envoyé");
+        //console.log("height envoyé");
       }
     });
   }, 1000); // Toutes les 1 secondes
@@ -92,7 +92,18 @@ const keepServerAlive = () => {
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send('ping');
-        console.log("ping envoyé");
+        //console.log("ping envoyé");
+      }
+    });
+  }, 50000);
+};
+
+const disconnetClients = () => {
+  disconnet = setInterval(() => {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        ws.close
+        //console.log("fermeture opéré pour");
       }
     });
   }, 50000);
