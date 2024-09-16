@@ -17,11 +17,12 @@ wss.on('connection', function connection(ws) {
   console.log('Client connecté');
 
 
-  const intervalId = setInterval(() => {
-    const randomNumber = Math.floor(Math.random() * 100) + 1; // Générer un nombre entre 1 et 100
-    ws.send(randomNumber.toString()); // Envoyer le nombre au client
-    console.log(`Nombre aléatoire envoyé: ${randomNumber}`);
-  }, 3000); // 3 secondes
+ const intervalId = setInterval(() => {
+  const randomNumber = Math.floor(Math.random() * 100) + 1; // Générer un nombre entre 1 et 100
+  const jsonMessage = JSON.stringify({ number: randomNumber }); // Créer un objet JSON avec le nombre
+  ws.send(jsonMessage); // Envoyer le message JSON au client
+  console.log(`Nombre aléatoire envoyé: ${randomNumber} en JSON: ${jsonMessage}`);
+}, 3000); // 3 secondes
 
 
   
