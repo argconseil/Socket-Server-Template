@@ -40,6 +40,7 @@ wss.on("connection", function (ws, req) {
 
   ws.on("close", (data) => {
     console.log("closing connection");
+    ws.close
       clearInterval(keepAliveId);
       clearInterval(randomNumberId); // Stopper l'envoi des chiffres aléatoires
   });
