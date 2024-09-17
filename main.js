@@ -36,7 +36,7 @@ const intervalId = setInterval(() => {
   // Envoyer le message JSON au client
   ws.send(jsonMessage); 
   console.log(`Nombre aléatoire envoyé: ${currentNumber} en JSON: ${jsonMessage}`);
-}, 3000); // 3 secondes
+}, 500); // 3 secondes
 
 
   
