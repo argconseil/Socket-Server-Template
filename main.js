@@ -17,25 +17,45 @@ wss.on('connection', function connection(ws) {
   console.log('Client connecté');
 
 
- let currentNumber = Math.floor(Math.random() * 100); // Commence avec un nombre aléatoire de départ
+let openingValue = Math.floor(Math.random() * 100); // Valeur d'ouverture initiale
+let currentNumber = openingValue; // Initialisation avec la valeur d'ouverture
+let direction = 1; // 1 pour monter, -1 pour descendre
 
 const intervalId = setInterval(() => {
-  // Générer une fluctuation raisonnable entre -5 et +5
-  const fluctuation = Math.floor(Math.random() * 11) - 5;
+  // Définir une fluctuation progressive contrôlée, ici entre 1 et 3
+  const fluctuation = Math.floor(Math.random() * 3) + 1;
 
-  // Ajouter la fluctuation au nombre actuel pour créer une progression plus linéaire
-  currentNumber += fluctuation;
+  // Appliquer la fluctuation en fonction de la direction actuelle
+  currentNumber += fluctuation * direction;
 
-  // S'assurer que le nombre reste entre 0 et 100
-  if (currentNumber > 100) currentNumber = 100;
-  if (currentNumber < 0) currentNumber = 0;
+  // Si on dépasse 100, on inverse la direction et on redescend vers l'ouverture
+  if (currentNumber > 100) {
+    currentNumber = 100; // Limite supérieure
+    direction = -1; // Repartir vers la baisse
+  }
+
+  // Si on redescend sous 0, on inverse la direction et on remonte vers l'ouverture
+  if (currentNumber < 0) {
+    currentNumber = 0; // Limite inférieure
+    direction = 1; // Repartir vers la hausse
+  }
+
+  // Si on monte, mais qu'on approche de l'ouverture à la baisse
+  if (direction === -1 && currentNumber <= openingValue) {
+    direction = 1; // Remonter progressivement après être repassé par l'ouverture
+  }
+
+  // Si on descend, mais qu'on approche de l'ouverture à la hausse
+  if (direction === 1 && currentNumber >= openingValue) {
+    direction = -1; // Redescendre progressivement après avoir dépassé l'ouverture
+  }
 
   // Créer l'objet JSON à envoyer
   const jsonMessage = JSON.stringify({ number: currentNumber });
-  
+
   // Envoyer le message JSON au client
-  ws.send(jsonMessage); 
-  console.log(`Nombre aléatoire envoyé: ${currentNumber} en JSON: ${jsonMessage}`);
+  ws.send(jsonMessage);
+  console.log(`Nombre progressif envoyé: ${currentNumber} en JSON: ${jsonMessage}`);
 }, 500); // 3 secondes
 
 
