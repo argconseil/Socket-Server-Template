@@ -19,45 +19,40 @@ wss.on('connection', function connection(ws) {
 
 let openingValue = Math.floor(Math.random() * 100); // Valeur d'ouverture initiale
 let currentNumber = openingValue; // Initialisation avec la valeur d'ouverture
-let direction = 1; // 1 pour monter, -1 pour descendre
 
 const intervalId = setInterval(() => {
-  // Définir une fluctuation progressive contrôlée, ici entre 1 et 3
-  const fluctuation = Math.floor(Math.random() * 3) + 1;
+  // Définir une fluctuation progressive contrôlée, ici entre -5 et +5
+  const fluctuation = Math.floor(Math.random() * 11) - 5; // Variation entre -5 et +5
 
-  // Appliquer la fluctuation en fonction de la direction actuelle
-  currentNumber += fluctuation * direction;
+  // Appliquer la fluctuation à la valeur actuelle
+  currentNumber += fluctuation;
 
-  // Si on dépasse 100, on inverse la direction et on redescend vers l'ouverture
+  // Si on dépasse 100, on redescend progressivement
   if (currentNumber > 100) {
     currentNumber = 100; // Limite supérieure
     direction = -1; // Repartir vers la baisse
   }
 
-  // Si on redescend sous 0, on inverse la direction et on remonte vers l'ouverture
+  // Si on descend sous 0, on remonte progressivement
   if (currentNumber < 0) {
     currentNumber = 0; // Limite inférieure
     direction = 1; // Repartir vers la hausse
   }
 
-  // Si on monte, mais qu'on approche de l'ouverture à la baisse
-  if (direction === -1 && currentNumber <= openingValue) {
-    direction = 1; // Remonter progressivement après être repassé par l'ouverture
-  }
-
-  // Si on descend, mais qu'on approche de l'ouverture à la hausse
-  if (direction === 1 && currentNumber >= openingValue) {
-    direction = -1; // Redescendre progressivement après avoir dépassé l'ouverture
+  // Si on descend ou monte trop loin de la valeur d'ouverture, on revient progressivement vers elle
+  if (currentNumber > openingValue + 50) {
+    currentNumber -= Math.abs(fluctuation); // Revenir progressivement vers l'ouverture
+  } else if (currentNumber < openingValue - 50) {
+    currentNumber += Math.abs(fluctuation); // Revenir progressivement vers l'ouverture
   }
 
   // Créer l'objet JSON à envoyer
   const jsonMessage = JSON.stringify({ number: currentNumber });
 
   // Envoyer le message JSON au client
-  ws.send(jsonMessage);
+  ws.send(jsonMessage); 
   console.log(`Nombre progressif envoyé: ${currentNumber} en JSON: ${jsonMessage}`);
 }, 500); // 3 secondes
-
 
   
 
