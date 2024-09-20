@@ -19,31 +19,31 @@ wss.on('connection', function connection(ws) {
 
 let openingValue = Math.floor(Math.random() * 100); // Valeur d'ouverture initiale
 let currentNumber = openingValue; // Initialisation avec la valeur d'ouverture
+let direction = Math.random() < 0.5 ? 1 : -1; // Direction initiale aléatoire: 1 pour monter, -1 pour descendre
 
 const intervalId = setInterval(() => {
   // Définir une fluctuation progressive contrôlée, ici entre -5 et +5
   const fluctuation = Math.floor(Math.random() * 11) - 5; // Variation entre -5 et +5
 
   // Appliquer la fluctuation à la valeur actuelle
-  currentNumber += fluctuation;
+  currentNumber += fluctuation * direction;
 
-  // Si on dépasse 100, on redescend progressivement
+  // Limiter la valeur entre 0 et 100
   if (currentNumber > 100) {
     currentNumber = 100; // Limite supérieure
-    direction = -1; // Repartir vers la baisse
+    direction = -1; // Inverser pour redescendre
   }
 
-  // Si on descend sous 0, on remonte progressivement
   if (currentNumber < 0) {
     currentNumber = 0; // Limite inférieure
-    direction = 1; // Repartir vers la hausse
+    direction = 1; // Inverser pour remonter
   }
 
-  // Si on descend ou monte trop loin de la valeur d'ouverture, on revient progressivement vers elle
+  // Si la valeur dépasse de plus de 50 unités la valeur d'ouverture, inverser la direction
   if (currentNumber > openingValue + 50) {
-    currentNumber -= Math.abs(fluctuation); // Revenir progressivement vers l'ouverture
+    direction = -1; // Inverser pour redescendre
   } else if (currentNumber < openingValue - 50) {
-    currentNumber += Math.abs(fluctuation); // Revenir progressivement vers l'ouverture
+    direction = 1; // Inverser pour remonter
   }
 
   // Créer l'objet JSON à envoyer
@@ -52,7 +52,7 @@ const intervalId = setInterval(() => {
   // Envoyer le message JSON au client
   ws.send(jsonMessage); 
   console.log(`Nombre progressif envoyé: ${currentNumber} en JSON: ${jsonMessage}`);
-}, 500); // 3 secondes
+}, 500); // 500 ms = 0,5 secondes
 
   
 
