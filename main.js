@@ -19,41 +19,37 @@ wss.on('connection', function connection(ws) {
 
 let openingValue = Math.floor(Math.random() * 100); // Valeur d'ouverture initiale
 let currentNumber = openingValue; // Initialisation avec la valeur d'ouverture
-let direction = Math.random() < 0.5 ? 1 : -1; // Direction initiale aléatoire: 1 pour monter, -1 pour descendre
+let target = Math.floor(Math.random() * 100); // Cible initiale aléatoire
+let step = 1; // Pas de progression (peut être ajusté)
 
 const intervalId = setInterval(() => {
-  // Définir une fluctuation progressive contrôlée, ici entre -5 et +5
-  const fluctuation = Math.floor(Math.random() * 11) - 5; // Variation entre -5 et +5
-
-  // Appliquer la fluctuation à la valeur actuelle
-  currentNumber += fluctuation * direction;
-
-  // Limiter la valeur entre 0 et 100
-  if (currentNumber > 100) {
-    currentNumber = 100; // Limite supérieure
-    direction = -1; // Inverser pour redescendre
+  // Si la cible est atteinte ou dépassée, choisir une nouvelle cible
+  if (currentNumber === target) {
+    target = Math.floor(Math.random() * 100); // Nouvelle cible
+    console.log(`Nouvelle cible définie: ${target}`);
   }
 
-  if (currentNumber < 0) {
-    currentNumber = 0; // Limite inférieure
-    direction = 1; // Inverser pour remonter
+  // Si on est en dessous de la valeur d'ouverture, la progression doit remonter vers elle
+  if (currentNumber < target) {
+    currentNumber += step; // Monter progressivement
+  } else if (currentNumber > target) {
+    currentNumber -= step; // Descendre progressivement
   }
 
-  // Si la valeur dépasse de plus de 50 unités la valeur d'ouverture, inverser la direction
-  if (currentNumber > openingValue + 50) {
-    direction = -1; // Inverser pour redescendre
-  } else if (currentNumber < openingValue - 50) {
-    direction = 1; // Inverser pour remonter
+  // S'assurer que la valeur d'ouverture est toujours touchée dans la descente ou montée
+  if (target < openingValue && currentNumber > openingValue) {
+    currentNumber -= step; // Redescendre progressivement vers l'ouverture
+  } else if (target > openingValue && currentNumber < openingValue) {
+    currentNumber += step; // Remonter progressivement vers l'ouverture
   }
 
   // Créer l'objet JSON à envoyer
   const jsonMessage = JSON.stringify({ number: currentNumber });
 
   // Envoyer le message JSON au client
-  ws.send(jsonMessage); 
+  ws.send(jsonMessage);
   console.log(`Nombre progressif envoyé: ${currentNumber} en JSON: ${jsonMessage}`);
-}, 500); // 500 ms = 0,5 secondes
-
+}, 500); // Intervalle de 500 ms
   
 
   ws.on('message', function incoming(message) {
